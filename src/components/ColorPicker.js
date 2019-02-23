@@ -1,3 +1,61 @@
+import { h, Component } from 'preact'
+import TextField from 'material-ui/TextField'
+import { DEFAULT_CONVERTER, converters } from '../transformers'
+import PickerDialog from './PickerDialog'
+
+export default class ColorPicker extends Component {
+    state = {
+        dirty: false,
+    }
+
+    handleColorChanged(e) {
+        this.props.onChange(e)
+    }
+
+    handleColorSelected(e) {
+        this.props.onClick(e)
+    }
+
+    handleBlur(e) {
+        this.setState({ dirty: true })
+    }
+
+    render({ ...props }, { ...state }) {
+        let key = props.propertyKey || props.name
+        let helperText = props.helperText ? props.helperText : null
+        let value = props.value ? props.value : null
+        let showPicker = props.showPicker ? props.showPicker : false
+        let converter = props.converter ? props.converter : DEFAULT_CONVERTER
+
+        let inputProps = Object.assign({
+            onBlur: this.handleBlur.bind(this),
+            dataKey: key,
+        }, props.inputProps)
+
+        return (
+            <div>
+                <TextField
+                    { ...props }
+                    id={props.name}
+                    onChange={this.handleChange.bind(this)}
+                    value={value}
+                    helperText={helperText}
+                    inputProps={inputProps}
+                />
+
+                {showPicker &&
+                    <PickerDialog
+                        value={value}
+                        onClick={this.handleColorSelected.bind(this)}
+                        onChange={this.handleColorChanged.bind(converters[converter](this))}
+                    />
+                }
+            </div>
+        )
+    }
+}
+
+/* 
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import compose from 'recompose/compose'
@@ -111,4 +169,4 @@ export default MakedColorPicker
 
 export {
   ColorPickerField
-}
+} */
